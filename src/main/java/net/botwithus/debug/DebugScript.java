@@ -1,14 +1,20 @@
 package net.botwithus.debug;
 
 import net.botwithus.internal.plugins.ScriptDefinition;
-import net.botwithus.rs3.events.impl.InventoryUpdateEvent;
 import net.botwithus.rs3.events.impl.VariableUpdateEvent;
+import net.botwithus.rs3.interfaces.InterfaceMode;
+import net.botwithus.rs3.interfaces.prayer.AncientBook;
+import net.botwithus.rs3.interfaces.prayer.NormalBook;
+import net.botwithus.rs3.interfaces.prayer.Prayer;
 import net.botwithus.rs3.item.Item;
 import net.botwithus.rs3.queries.ResultSet;
+import net.botwithus.rs3.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.queries.builders.inventories.InventoryQuery;
+import net.botwithus.rs3.script.Delay;
 import net.botwithus.rs3.script.Script;
 import net.botwithus.rs3.skills.Skill;
 import net.botwithus.rs3.skills.Skills;
+import net.botwithus.rs3.variables.VariableManager;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +31,12 @@ public class DebugScript extends Script {
     public void initialize() {
         super.initialize();
         this.sgc = new DebugGraphicsContext(this);
+
+        //What if jagex updates and we didn't fix it
+        InterfaceMode.MODERN.overrideInterface(Prayer.class, "quick_toggle", 1435);
+        //Scripters wants to support legacy interface to!
+        InterfaceMode.LEGACY.overrideInterface(Prayer.class, "quick_toggle", 1506);
+
         subscribe(VariableUpdateEvent.class, event -> {
             if(event.isVarbit()) {
                 if(varbits.containsKey(event.getId())) {
@@ -44,7 +56,38 @@ public class DebugScript extends Script {
     }
 
     @Override
-    public void onLoop() {}
+    public void onLoop() {
+        Delay.delay(5000);
+    }
+
+    private void variableExample() {
+        //Skill dialogue, selected item
+        int itemId = VariableManager.getVarPlayerValue(1170);
+        System.out.println(itemId);
+        boolean inCombat = VariableManager.getVarbitValue(1899) == 1;
+        System.out.println("Is in combat= " + inCombat);
+    }
+
+    private void prayerExample() {
+        Prayer.toggleQuickPrayer();
+        Prayer.toggle(NormalBook.PROTECT_ITEM);
+
+        if(Prayer.isActive(NormalBook.PROTECT_ITEM)) {
+            System.out.println("Protect item is active");
+        }
+
+        Prayer.toggle(AncientBook.BERSERKER);
+        if(Prayer.isActive(AncientBook.BERSERKER)) {
+            System.out.println("Berserker is active");
+        }
+    }
+
+    public void interfaceQuery() {
+        ComponentQuery.newQuery(37).option("Rune bar", String::contains)
+                .results().first().ifPresent(c -> {
+                    System.out.println(c.getSpriteId());
+                });
+    }
 
     public void skillsExample() {
         Skill skill = Skills.getSkill(Skills.SLAYER);
