@@ -33,9 +33,9 @@ public class DebugScript extends Script {
         this.sgc = new DebugGraphicsContext(this);
 
         //What if jagex updates and we didn't fix it
-        InterfaceMode.MODERN.overrideInterface(Prayer.class, "quick_toggle", 1435);
+        InterfaceMode.MODERN.overrideInterface(Prayer.class, "quick_toggle", 1430);
         //Scripters wants to support legacy interface to!
-        InterfaceMode.LEGACY.overrideInterface(Prayer.class, "quick_toggle", 1506);
+        InterfaceMode.LEGACY.overrideInterface(Prayer.class, "quick_toggle", 1505);
 
         subscribe(VariableUpdateEvent.class, event -> {
             if(event.isVarbit()) {
