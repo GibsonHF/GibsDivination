@@ -1,18 +1,20 @@
 package net.botwithus.debug;
 
 import net.botwithus.rs3.imgui.ImGui;
+import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DebugGraphicsContext extends ScriptGraphicsContext {
 
     private final DebugScript script;
 
-    public DebugGraphicsContext(DebugScript script) {
+    public DebugGraphicsContext(ScriptConsole console, DebugScript script) {
+        super(console);
         this.script = script;
     }
+
 
     public void renderVarbitDebug() {
         if(ImGui.Button("Hide all")) {
@@ -119,11 +121,12 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
         }
     }
 
+    private String result = "";
+
     @Override
     public void drawSettings() {
         ImGui.SetWindowSize(200.f, 200.f);
         if(ImGui.Begin("Debug Settings", 0)) {
-
             if(ImGui.BeginTabBar("##variable_debug", 0)) {
 
                 if(ImGui.BeginTabItem("Varps", 0)) {

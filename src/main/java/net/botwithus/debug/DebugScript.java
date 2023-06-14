@@ -1,12 +1,12 @@
 package net.botwithus.debug;
 
 import net.botwithus.internal.plugins.ScriptDefinition;
-import net.botwithus.rs3.events.impl.VariableUpdateEvent;
-import net.botwithus.rs3.interfaces.InterfaceMode;
+import net.botwithus.rs3.entities.pathing.player.Player;
 import net.botwithus.rs3.interfaces.prayer.AncientBook;
 import net.botwithus.rs3.interfaces.prayer.NormalBook;
 import net.botwithus.rs3.interfaces.prayer.Prayer;
 import net.botwithus.rs3.item.Item;
+import net.botwithus.rs3.queries.Queries;
 import net.botwithus.rs3.queries.ResultSet;
 import net.botwithus.rs3.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.queries.builders.inventories.InventoryQuery;
@@ -30,12 +30,19 @@ public class DebugScript extends Script {
     @Override
     public void initialize() {
         super.initialize();
-        this.sgc = new DebugGraphicsContext(this);
+        this.sgc = new DebugGraphicsContext(getConsole(), this);
 
-        //What if jagex updates and we didn't fix it
+        /*//What if jagex updates and we didn't fix it
         InterfaceMode.MODERN.overrideInterface(Prayer.class, "quick_toggle", 1430);
         //Scripters wants to support legacy interface to!
         InterfaceMode.LEGACY.overrideInterface(Prayer.class, "quick_toggle", 1505);
+
+        subscribe(ChatMessageEvent.class, event -> {
+            if(event.getMessage().equals("test")) {
+                Prayer.toggleQuickPrayer(); // throws exception Not on script thread
+                Prayer.toggle(NormalBook.PROTECT_ITEM); // throws exception Not on script thread
+            }
+        });
 
         subscribe(VariableUpdateEvent.class, event -> {
             if(event.isVarbit()) {
@@ -52,12 +59,22 @@ public class DebugScript extends Script {
                     varps.put(event.getId(), new Varp(event.getId(), event.getValue(), false));
                 }
             }
-        });
+        });*/
     }
 
     @Override
     public void onLoop() {
         Delay.delay(5000);
+    }
+
+    public void playerExample() {
+        Player self = Queries.self();
+        if(self == null) {
+            System.out.println("Fuck");
+        } else {
+            self.getHitmarks();
+            self.getHeadbars();
+        }
     }
 
     private void variableExample() {
@@ -87,10 +104,17 @@ public class DebugScript extends Script {
                 .results().first().ifPresent(c -> {
                     System.out.println(c.getSpriteId());
                 });
+
+        ComponentQuery.newQuery(37)
+                .componentIndex(62)
+                .subComponentIndex(3)
+                .results()
+                .first()
+                .map(c -> c.doAction(1));
     }
 
     public void skillsExample() {
-        Skill skill = Skills.getSkill(Skills.SLAYER);
+        Skill skill = Skills.SLAYER.getSkill();
         System.out.println(skill);
     }
 
