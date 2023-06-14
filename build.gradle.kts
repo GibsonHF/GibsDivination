@@ -24,7 +24,7 @@ dependencies {
 
 val copyJar by tasks.register<Copy>("copyJar") {
     from("build/libs/")
-    into("C:\\Users\\david\\BotWithUs\\plugins\\local\\")
+    into("${System.getProperty("user.home")}\\BotWithUs\\plugins\\local\\")
     include("*.jar")
 }
 
