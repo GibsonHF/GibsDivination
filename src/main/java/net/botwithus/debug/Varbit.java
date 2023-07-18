@@ -1,7 +1,7 @@
 package net.botwithus.debug;
 
-import net.botwithus.rs3.variables.VarDomain;
-import net.botwithus.rs3.variables.VariableManager;
+import net.botwithus.rs3.types.vars.VarDomainType;
+import net.botwithus.rs3.vars.VarManager;
 
 import java.time.LocalTime;
 
@@ -12,14 +12,14 @@ public class Varbit {
 
     private LocalTime lastUpdated;
 
-    private final VarDomain domain;
+    private final VarDomainType domain;
 
     public Varbit(int id, int value, boolean hidden) {
         this.id = id;
         this.value = value;
         this.hidden = hidden;
         this.lastUpdated = LocalTime.now();
-        this.domain = VariableManager.getVarbitDomain(id);
+        this.domain = VarManager.getVarbitDomain(id);
     }
 
     public int getId() {
@@ -43,7 +43,7 @@ public class Varbit {
         this.hidden = hidden;
     }
 
-    public VarDomain getDomain() {
+    public VarDomainType getDomain() {
         return domain;
     }
 

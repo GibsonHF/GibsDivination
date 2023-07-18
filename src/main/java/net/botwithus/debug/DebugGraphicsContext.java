@@ -127,7 +127,7 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
     public void drawSettings() {
         ImGui.SetWindowSize(200.f, 200.f);
         if(ImGui.Begin("Debug Settings", 0)) {
-            if(ImGui.BeginTabBar("##variable_debug", 0)) {
+            /*if(ImGui.BeginTabBar("##variable_debug", 0)) {
 
                 if(ImGui.BeginTabItem("Varps", 0)) {
                     renderVarpDebug();
@@ -139,8 +139,7 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
                 }
 
                 ImGui.EndTabBar();
-            }
-
+            }*/
             ImGui.End();
         }
     }

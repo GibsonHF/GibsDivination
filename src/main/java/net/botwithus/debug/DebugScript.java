@@ -1,20 +1,22 @@
 package net.botwithus.debug;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.botwithus.internal.plugins.ScriptDefinition;
+import net.botwithus.rs3.Client;
+import net.botwithus.rs3.entities.pathing.npc.Npc;
 import net.botwithus.rs3.entities.pathing.player.Player;
-import net.botwithus.rs3.interfaces.prayer.AncientBook;
-import net.botwithus.rs3.interfaces.prayer.NormalBook;
-import net.botwithus.rs3.interfaces.prayer.Prayer;
-import net.botwithus.rs3.item.Item;
-import net.botwithus.rs3.queries.Queries;
+import net.botwithus.rs3.interfaces.Component;
+import net.botwithus.rs3.interfaces.item.Item;
 import net.botwithus.rs3.queries.ResultSet;
 import net.botwithus.rs3.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.queries.builders.inventories.InventoryQuery;
-import net.botwithus.rs3.script.Delay;
+import net.botwithus.rs3.queries.builders.npc.NpcQuery;
+import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.Script;
 import net.botwithus.rs3.skills.Skill;
 import net.botwithus.rs3.skills.Skills;
-import net.botwithus.rs3.variables.VariableManager;
+import net.botwithus.rs3.vars.VarManager;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,14 +64,24 @@ public class DebugScript extends Script {
         });*/
     }
 
+    public static Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping()
+            .create();
+
     @Override
     public void onLoop() {
-        Delay.delay(5000);
+        System.out.println("Client Cycle " + Client.getClientCycle());
+        Execution.delay(5000);
+    }
+
+    public void npcQueryExample() {
+        for (Npc chicken : NpcQuery.newQuery().name("Chicken").results()) {
+            System.out.println("Name= " + chicken.getName() + " Id= " + chicken.getId());
+        }
     }
 
     public void playerExample() {
-        Player self = Queries.self();
-        if(self == null) {
+        Player self = Client.getLocalPlayer();
+        if (self == null) {
             System.out.println("Fuck");
         } else {
             self.getHitmarks();
@@ -79,38 +91,30 @@ public class DebugScript extends Script {
 
     private void variableExample() {
         //Skill dialogue, selected item
-        int itemId = VariableManager.getVarPlayerValue(1170);
+        int itemId = VarManager.getVarPlayerValue(1170);
         System.out.println(itemId);
-        boolean inCombat = VariableManager.getVarbitValue(1899) == 1;
+        boolean inCombat = VarManager.getVarbitValue(1899) == 1;
         System.out.println("Is in combat= " + inCombat);
-    }
-
-    private void prayerExample() {
-        Prayer.toggleQuickPrayer();
-        Prayer.toggle(NormalBook.PROTECT_ITEM);
-
-        if(Prayer.isActive(NormalBook.PROTECT_ITEM)) {
-            System.out.println("Protect item is active");
-        }
-
-        Prayer.toggle(AncientBook.BERSERKER);
-        if(Prayer.isActive(AncientBook.BERSERKER)) {
-            System.out.println("Berserker is active");
-        }
     }
 
     public void interfaceQuery() {
         ComponentQuery.newQuery(37).option("Rune bar", String::contains)
-                .results().first().ifPresent(c -> {
-                    System.out.println(c.getSpriteId());
-                });
+                .results().first();
 
-        ComponentQuery.newQuery(37)
+        /*ComponentQuery.newQuery(37)
                 .componentIndex(62)
                 .subComponentIndex(3)
                 .results()
                 .first()
-                .map(c -> c.doAction(1));
+                .map(c -> c.doAction(1));*/
+        Component first = ComponentQuery.newQuery(37)
+                .componentIndex(62)
+                .subComponentIndex(3)
+                .results()
+                .first();
+        if(first != null) {
+            first.interact(1);
+        }
     }
 
     public void skillsExample() {
@@ -123,11 +127,14 @@ public class DebugScript extends Script {
         InventoryQuery query = InventoryQuery.newQuery().itemId(1512);
         ResultSet<Item> results = query.results();
         for (Item result : results) {
-            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventoryId(), result.getName(), result.getItemId());
+            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventoryId(), result.getName(), result.getId());
         }
         //Find Logs in local player inventory or Backpack
-        InventoryQuery query1 = InventoryQuery.newQuery(93).itemName("Logs");
-        query1.results().first().ifPresent(System.out::println);
+        InventoryQuery query1 = InventoryQuery.newQuery(93).name("Logs");
+        Item first = query1.results().first();
+        if(first != null) {
+            System.out.println(first);
+        }
     }
 
 }
