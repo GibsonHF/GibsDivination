@@ -2,26 +2,28 @@ package net.botwithus.debug;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.botwithus.internal.plugins.ScriptDefinition;
-import net.botwithus.rs3.Client;
-import net.botwithus.rs3.entities.pathing.npc.Npc;
-import net.botwithus.rs3.entities.pathing.player.Player;
-import net.botwithus.rs3.interfaces.Component;
-import net.botwithus.rs3.interfaces.item.Item;
-import net.botwithus.rs3.queries.ResultSet;
-import net.botwithus.rs3.queries.builders.components.ComponentQuery;
-import net.botwithus.rs3.queries.builders.inventories.InventoryQuery;
-import net.botwithus.rs3.queries.builders.npc.NpcQuery;
+import net.botwithus.internal.scripts.ScriptDefinition;
+import net.botwithus.rs3.game.Client;
+import net.botwithus.rs3.game.Item;
+import net.botwithus.rs3.game.hud.interfaces.Component;
+import net.botwithus.rs3.game.js5.types.vars.VarDomainType;
+import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
+import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
+import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
+import net.botwithus.rs3.game.queries.results.EntityResultSet;
+import net.botwithus.rs3.game.queries.results.ResultSet;
+import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
+import net.botwithus.rs3.game.scene.entities.characters.player.Player;
+import net.botwithus.rs3.game.skills.Skill;
+import net.botwithus.rs3.game.skills.Skills;
+import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.script.Execution;
-import net.botwithus.rs3.script.Script;
-import net.botwithus.rs3.skills.Skill;
-import net.botwithus.rs3.skills.Skills;
-import net.botwithus.rs3.vars.VarManager;
+import net.botwithus.rs3.script.LoopingScript;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DebugScript extends Script {
+public class DebugScript extends LoopingScript {
     public DebugScript(String name, ScriptDefinition plugin) {
         super(name, plugin);
     }
@@ -30,9 +32,9 @@ public class DebugScript extends Script {
     public Map<Integer, Varbit> varbits = new ConcurrentHashMap<>();
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public boolean initialize() {
         this.sgc = new DebugGraphicsContext(getConsole(), this);
+        this.loopDelay = 590;
 
         /*//What if jagex updates and we didn't fix it
         InterfaceMode.MODERN.overrideInterface(Prayer.class, "quick_toggle", 1430);
@@ -62,6 +64,7 @@ public class DebugScript extends Script {
                 }
             }
         });*/
+        return super.initialize();
     }
 
     public static Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping()
@@ -69,12 +72,14 @@ public class DebugScript extends Script {
 
     @Override
     public void onLoop() {
-        System.out.println("Client Cycle " + Client.getClientCycle());
+        npcQueryExample();
         Execution.delay(5000);
     }
 
     public void npcQueryExample() {
-        for (Npc chicken : NpcQuery.newQuery().name("Chicken").results()) {
+        EntityResultSet<Npc> results = NpcQuery.newQuery().name("Chicken").results();
+        System.out.println(results.size());
+        for (Npc chicken : results) {
             System.out.println("Name= " + chicken.getName() + " Id= " + chicken.getId());
         }
     }
@@ -91,7 +96,7 @@ public class DebugScript extends Script {
 
     private void variableExample() {
         //Skill dialogue, selected item
-        int itemId = VarManager.getVarPlayerValue(1170);
+        int itemId = VarManager.getVarValue(VarDomainType.PLAYER, 1170);
         System.out.println(itemId);
         boolean inCombat = VarManager.getVarbitValue(1899) == 1;
         System.out.println("Is in combat= " + inCombat);
@@ -112,7 +117,7 @@ public class DebugScript extends Script {
                 .subComponentIndex(3)
                 .results()
                 .first();
-        if(first != null) {
+        if (first != null) {
             first.interact(1);
         }
     }
@@ -124,15 +129,15 @@ public class DebugScript extends Script {
 
     public void inventoryQuery() {
         //Find what inventory 1512 belongs too.
-        InventoryQuery query = InventoryQuery.newQuery().itemId(1512);
+        InventoryItemQuery query = InventoryItemQuery.newQuery().ids(1512);
         ResultSet<Item> results = query.results();
         for (Item result : results) {
-            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventoryId(), result.getName(), result.getId());
+            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventory().getId(), result.getName(), result.getId());
         }
         //Find Logs in local player inventory or Backpack
-        InventoryQuery query1 = InventoryQuery.newQuery(93).name("Logs");
+        InventoryItemQuery query1 = InventoryItemQuery.newQuery(93).name("Logs");
         Item first = query1.results().first();
-        if(first != null) {
+        if (first != null) {
             System.out.println(first);
         }
     }
