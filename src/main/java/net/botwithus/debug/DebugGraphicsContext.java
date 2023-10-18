@@ -10,6 +10,8 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
 
     private final DebugScript script;
 
+
+
     public DebugGraphicsContext(ScriptConsole console, DebugScript script) {
         super(console);
         this.script = script;
@@ -127,6 +129,10 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
     public void drawSettings() {
         ImGui.SetWindowSize(200.f, 200.f);
         if(ImGui.Begin("Debug Settings", 0)) {
+            if(ImGui.Button("Send Game Message")) {
+                System.out.println("Running Script...");
+                script.runScript = true;
+            }
             /*if(ImGui.BeginTabBar("##variable_debug", 0)) {
 
                 if(ImGui.BeginTabItem("Varps", 0)) {

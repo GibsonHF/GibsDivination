@@ -1,2 +1,8 @@
-rootProject.name = "BotWithUsScript"
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
 
+rootProject.name = "BotWithUsScript"
