@@ -30,6 +30,7 @@ import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
+import net.botwithus.rs3.script.config.ScriptConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,8 @@ import static net.botwithus.rs3.cs2.ScriptDescriptor.INT;
 import static net.botwithus.rs3.cs2.ScriptDescriptor.STRING;
 
 public class DebugScript extends LoopingScript {
-    public DebugScript(String name, ScriptDefinition plugin) {
-        super(name, plugin);
+    public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
+        super(name, scriptConfig, scriptDefinition);
     }
 
     public Map<Integer, Varp> varps = new ConcurrentHashMap<>();
