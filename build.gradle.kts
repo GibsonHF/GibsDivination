@@ -9,6 +9,9 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        setUrl("https://nexus.botwithus.net/repository/maven-snapshots/")
+    }
     maven { setUrl("https://jitpack.io") }
 }
 
@@ -39,7 +42,7 @@ tasks.named<Jar>("jar") {
 }
 
 dependencies {
-    implementation ("com.github.BotWithUs:BotWithUsAPI:master-SNAPSHOT")
+    implementation ("net.botwithus.rs3:botwithus-api:1.0.0-20231112.012705-1")
     implementation ("com.github.BotWithUs:BwuExtendedPublicAPI:master-SNAPSHOT")
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")

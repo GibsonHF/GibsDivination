@@ -239,7 +239,7 @@ public class DebugScript extends LoopingScript {
         InventoryItemQuery query = InventoryItemQuery.newQuery().ids(1512);
         ResultSet<Item> results = query.results();
         for (Item result : results) {
-            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventory().getId(), result.getName(), result.getId());
+            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventoryType().getId(), result.getName(), result.getId());
         }
         //Find Logs in local player inventory or Backpack
         InventoryItemQuery query1 = InventoryItemQuery.newQuery(93).name("Logs");
