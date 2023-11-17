@@ -30,6 +30,7 @@ import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
+import net.botwithus.rs3.script.config.ScriptConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,8 @@ import static net.botwithus.rs3.cs2.ScriptDescriptor.INT;
 import static net.botwithus.rs3.cs2.ScriptDescriptor.STRING;
 
 public class DebugScript extends LoopingScript {
-    public DebugScript(String name, ScriptDefinition plugin) {
-        super(name, plugin);
+    public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
+        super(name, scriptConfig, scriptDefinition);
     }
 
     public Map<Integer, Varp> varps = new ConcurrentHashMap<>();
@@ -238,7 +239,7 @@ public class DebugScript extends LoopingScript {
         InventoryItemQuery query = InventoryItemQuery.newQuery().ids(1512);
         ResultSet<Item> results = query.results();
         for (Item result : results) {
-            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventory().getId(), result.getName(), result.getId());
+            System.out.printf("InvId= %d Name= %s Id= %d\n", result.getInventoryType().getId(), result.getName(), result.getId());
         }
         //Find Logs in local player inventory or Backpack
         InventoryItemQuery query1 = InventoryItemQuery.newQuery(93).name("Logs");
