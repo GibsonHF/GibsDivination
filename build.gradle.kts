@@ -1,5 +1,6 @@
 plugins {
-    id("BotWithUs") version "1.0-SNAPSHOT"
+    id("java")
+    `maven-publish`
 }
 
 group = "net.botwithus.debug"
@@ -8,16 +9,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-script {
-    this.useMavenLocal.set(true)
-    this.apiVersion.set("1.0.0-SNAPSHOT")
-    this.scriptClass.set("net.botwithus.debug.DebugScript")
-    this.scriptVersion.set("1.0")
-    this.scriptName.set("Debug Script")
-    this.scriptDescription.set("An Example Script")
-    this.author.set("BotWithUs")
+    maven { setUrl("https://jitpack.io") }
 }
 
 tasks.withType<JavaCompile> {
@@ -26,7 +18,29 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("--enable-preview")
 }
 
+val copyJar by tasks.register<Copy>("copyJar") {
+    from("build/libs/")
+    into("${System.getProperty("user.home")}\\BotWithUs\\scripts\\local\\")
+    include("*.jar")
+}
+
+configurations {
+    create("includeInJar") {
+        this.isTransitive = false
+    }
+}
+
+tasks.named<Jar>("jar") {
+    from({
+        configurations["includeInJar"].map { zipTree(it) }
+    })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    finalizedBy(copyJar)
+}
+
 dependencies {
+    implementation ("com.github.BotWithUs:BotWithUsAPI:master-SNAPSHOT")
+    implementation ("com.github.BotWithUs:BwuExtendedPublicAPI:master-SNAPSHOT")
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
