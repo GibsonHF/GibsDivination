@@ -3,16 +3,9 @@ package net.botwithus.debug;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.botwithus.internal.scripts.ScriptDefinition;
-import net.botwithus.rs3.cs2.ArgumentLayout;
-import net.botwithus.rs3.cs2.ScriptDescriptor;
-import net.botwithus.rs3.cs2.ScriptHandle;
-import net.botwithus.rs3.cs2.ScriptLookup;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.hud.interfaces.Component;
-import net.botwithus.rs3.game.js5.types.EnumType;
-import net.botwithus.rs3.game.js5.types.ItemType;
-import net.botwithus.rs3.game.js5.types.configs.ConfigManager;
 import net.botwithus.rs3.game.js5.types.vars.VarDomainType;
 import net.botwithus.rs3.game.queries.builders.animations.SpotAnimationQuery;
 import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
@@ -32,12 +25,8 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static net.botwithus.rs3.cs2.ScriptDescriptor.INT;
-import static net.botwithus.rs3.cs2.ScriptDescriptor.STRING;
 
 public class DebugScript extends LoopingScript {
     public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
@@ -64,13 +53,6 @@ public class DebugScript extends LoopingScript {
 
     @Override
     public void onLoop() {
-        if(runScript) {
-            runScript = false;
-            System.out.println("Executing Script.");
-            executeCs2ScriptsWithReturnValues();
-            System.out.println("Script Finished.");
-        }
-
         npcQueryExample();
 
         /*Item box = InventoryItemQuery.newQuery(93).name("Archaeological soil box")
@@ -97,57 +79,6 @@ public class DebugScript extends LoopingScript {
         groundItemQuery();
 
         Execution.delay(5000);
-    }
-
-    public void executeCs2Scripts() {
-        ScriptHandle sendGameMessage = ScriptLookup.lookup(12868, ScriptDescriptor.ofVoid(STRING));
-        if(sendGameMessage != null) {
-            sendGameMessage.invokeExact("[Debug Script]: Hello, World");
-        }
-    }
-
-    public void executeCs2ScriptsWithReturnValues() {
-        ScriptHandle handle = ScriptLookup.lookup(10500, ScriptDescriptor.of(List.of(STRING)));
-        if(handle != null) {
-            Object[] values = handle.invokeExact();
-            if(values == null) {
-                System.out.println("No return values.");
-            } else if(values.length != 1) {
-                System.out.println("Ugh....");
-            } else if (!(values[0] instanceof String)) {
-                System.out.println("Fuck what??? " + values[0].getClass().getName());
-            } else {
-                System.out.println("Value= " + values[0]);
-            }
-        } else {
-            System.out.println("Script handle is null");
-        }
-    }
-
-    public int getMaximumHeat(int invId, int slot) {
-        EnumType enumType = ConfigManager.getEnumType(15095);
-        int key = VarManager.getInvVarbit(invId, slot, 43222);
-        Integer value = (Integer) enumType.getOutput(key);
-        if(value == null) {
-            return -1;
-        }
-        ItemType type = ConfigManager.getItemType(value);
-
-        ScriptHandle handle = ScriptLookup.lookup(2547, ScriptDescriptor.of(List.of(INT), INT));
-        if(handle != null && type != null) {
-            Object[] values = handle.invokeExact(type.getId());
-            return (int) values[0];
-        }
-        return -1;
-    }
-
-    public int getOreAmount(int oreId) {
-        ScriptHandle handle = ScriptLookup.lookup(8250, ScriptDescriptor.of(List.of(INT), INT));
-        if(handle != null) {
-            Object[] rets = handle.invokeExact(oreId);
-            return (int) rets[0];
-        }
-        return 0;
     }
 
     public void spotAnimQuery() {
