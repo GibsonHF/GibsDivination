@@ -3,7 +3,6 @@ package net.botwithus.debug;
 import net.botwithus.api.game.hud.inventories.Backpack;
 import net.botwithus.api.game.script.treescript.BranchTask;
 import net.botwithus.api.game.script.treescript.LeafTask;
-import net.botwithus.api.game.script.treescript.Permissive;
 import net.botwithus.api.game.script.treescript.TreeTask;
 import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
 import net.botwithus.rs3.game.queries.results.EntityResultSet;
