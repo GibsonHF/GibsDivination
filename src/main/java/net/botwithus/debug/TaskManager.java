@@ -75,8 +75,9 @@ public class TaskManager {
         return GameState.DEFAULT;
     }
 
-    public void switchTo(Task harvestWispTask) {
+    public void switchTo(Task task) {
         tasks.clear();
+        tasks.add(task);
     }
 
     public interface Task {
