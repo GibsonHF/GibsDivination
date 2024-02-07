@@ -11,7 +11,12 @@ repositories {
     mavenCentral()
     maven {
         setUrl("https://nexus.botwithus.net/repository/maven-snapshots/")
+
     }
+    maven {
+        setUrl("https://jitpack.io")
+    }
+
 }
 
 tasks.withType<JavaCompile> {
@@ -24,6 +29,8 @@ val copyJar by tasks.register<Copy>("copyJar") {
     from("build/libs/")
     into("${System.getProperty("user.home")}\\BotWithUs\\scripts\\local\\")
     include("*.jar")
+    outputs.upToDateWhen { false }
+
 }
 
 configurations {
@@ -42,7 +49,7 @@ tasks.named<Jar>("jar") {
 
 dependencies {
     implementation("net.botwithus.rs3:botwithus-api:1.0.0-SNAPSHOT")
-    implementation("net.botwithus.xapi.public:botwithusx-api:1.0.0-SNAPSHOT")
+    implementation("net.botwithus.xapi.public:api:1.0.0-SNAPSHOT")
     "includeInJar"("net.botwithus.xapi.public:botwithusx-api:1.0.0-SNAPSHOT")
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")

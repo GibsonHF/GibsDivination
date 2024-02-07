@@ -1,157 +1,108 @@
 package net.botwithus.debug;
 
+import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.imgui.ImGui;
+import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
-
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DebugGraphicsContext extends ScriptGraphicsContext {
 
     private final DebugScript script;
-
-
+    private long startTime;
+    private int startXP;
+    private int startLevel;
+    public String[] wispNames = {
+            "Pale", "Flickering", "Bright", "Glowing", "Sparkling",
+            "Gleaming", "Vibrant", "Lustrous", "Elder", "Brilliant",
+            "Radiant", "Luminous", "Incandescent"
+    };
+   public NativeInteger selectedWispIndex = new NativeInteger(0);
 
     public DebugGraphicsContext(ScriptConsole console, DebugScript script) {
         super(console);
         this.script = script;
+        this.startTime = System.currentTimeMillis();
+        this.startXP = Skills.DIVINATION.getSkill().getExperience();
+        this.startLevel = Skills.DIVINATION.getSkill().getLevel();
     }
 
 
-    public void renderVarbitDebug() {
-        if(ImGui.Button("Hide all")) {
-            for (Varbit value : script.varbits.values()) {
-                value.setHidden(true);
-            }
-        }
-        ImGui.SameLine();
-        if(ImGui.Button("Unhide all")) {
-            for (Varbit value : script.varbits.values()) {
-                value.setHidden(false);
-            }
-        }
-        ImGui.SameLine();
-        if(ImGui.Button("Clear all")) {
-            int[] keys = script.varbits.entrySet().stream().filter(entry -> !entry.getValue().isHidden())
-                    .mapToInt(Map.Entry::getKey).toArray();
-            for (int key : keys) {
-                script.varbits.remove(key);
-            }
-        }
-        ImGui.Separator();
-        if(ImGui.BeginTable("##varbits_table", 4, 0)) {
-            ImGui.TableSetupColumn("Varbit ID", 0);
-            ImGui.TableSetupColumn("Varbit Value", 0);
-            ImGui.TableSetupColumn("Domain", 0);
-            ImGui.TableSetupColumn("Last Updated", 0);
-
-            ImGui.TableHeadersRow();
-
-            for (Varbit value : script.varbits.values()) {
-                if(!value.isHidden()) {
-                    ImGui.TableNextRow();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text("%d", value.getId());
-                    ImGui.Separator();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text("%d", value.getValue());
-                    ImGui.Separator();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text(value.getDomain().name());
-                    ImGui.Separator();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text(value.getLastUpdated().toString());
-                    ImGui.Separator();
-                }
-            }
-
-            ImGui.EndTable();
-        }
-    }
-
-    public void renderVarpDebug() {
-        if(ImGui.Button("Hide all")) {
-            for (Varp value : script.varps.values()) {
-                value.setHidden(true);
-            }
-        }
-        ImGui.SameLine();
-        if(ImGui.Button("Unhide all")) {
-            for (Varp value : script.varps.values()) {
-                value.setHidden(false);
-            }
-        }
-        ImGui.SameLine();
-        if(ImGui.Button("Clear all")) {
-            int[] keys = script.varps.entrySet().stream().filter(entry -> !entry.getValue().isHidden())
-                    .mapToInt(Map.Entry::getKey).toArray();
-            for (int key : keys) {
-                script.varps.remove(key);
-            }
-        }
-        ImGui.Separator();
-        if(ImGui.BeginTable("##varp_table", 4, 0)) {
-            ImGui.TableSetupColumn("Varp ID", 0);
-            ImGui.TableSetupColumn("Varp Value", 0);
-            ImGui.TableSetupColumn("Last Updated", 0);
-
-            ImGui.TableHeadersRow();
-
-            for (Varp value : script.varps.values()) {
-                if(!value.isHidden()) {
-                    ImGui.TableNextRow();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text("%d", value.getId());
-                    ImGui.Separator();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text("%d", value.getValue());
-                    ImGui.Separator();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text(value.getLastUpdated().toString());
-                    ImGui.Separator();
-                }
-            }
-
-            ImGui.EndTable();
-        }
-    }
-
-    private String result = "";
-
-    @Override
     public void drawSettings() {
         ImGui.SetWindowSize(200.f, 200.f);
-        if(ImGui.Begin("Debug Settings", 0)) {
-            if(ImGui.Button("Send Game Message")) {
-                System.out.println("Running Script...");
-                script.runScript = true;
-            }
-            /*if(ImGui.BeginTabBar("##variable_debug", 0)) {
+        if (ImGui.Begin("GibsDivination", 0)) {
 
-                if(ImGui.BeginTabItem("Varps", 0)) {
-                    renderVarpDebug();
+
+            if (ImGui.BeginTabBar("SettingsTabBar", 0)) {
+
+                if (ImGui.BeginTabItem("Settings", 0)) {
+                    script.runScript = ImGui.Checkbox("Run Script", script.runScript);
+                    ImGui.PushStyleColor(2, RGBToFloat(33), RGBToFloat(204),RGBToFloat(45), RGBToFloat(255)); //WindowBg
+                    script.Enriched = ImGui.Checkbox("Capture Chronicles", script.Enriched);
+                    script.Butterfly = ImGui.Checkbox("Capture Butterflies", script.Butterfly);
+                    ImGui.PopStyleColor();
                     ImGui.EndTabItem();
                 }
-                if(ImGui.BeginTabItem("Varbits", 0)) {
-                    renderVarbitDebug();
+
+                if (ImGui.BeginTabItem("Statistics", 0)) {
+                    ImGui.Text("Total Chronicles: " + script.totalCaughtChronicles);
+                    ImGui.Text("Total Butterflies: " + script.totalCaughtButterflies);
+
+                    long timeElapsedMillis = System.currentTimeMillis() - startTime;
+                    String timeElapsed = String.format("%02dh %02dm %02ds",
+                            TimeUnit.MILLISECONDS.toHours(timeElapsedMillis),
+                            TimeUnit.MILLISECONDS.toMinutes(timeElapsedMillis) % TimeUnit.HOURS.toMinutes(1),
+                            TimeUnit.MILLISECONDS.toSeconds(timeElapsedMillis) % TimeUnit.MINUTES.toSeconds(1));
+                    ImGui.Text("Time Elapsed: " + timeElapsed);
+
+                    int currentXP = Skills.DIVINATION.getSkill().getExperience();
+                    int xpGained = Math.max(0, currentXP - startXP);
+                    int xpPerHour = (int) (xpGained / (timeElapsedMillis / 3600000.0));
+                    ImGui.Text("XP Gained: " + xpGained);
+                    ImGui.Text("XP/Hour: " + xpPerHour);
+
+                    int xpToLevel = Skills.DIVINATION.getSkill().getExperienceToNextLevel();
+                    int currentLevel = Skills.DIVINATION.getSkill().getLevel();
+                    int levelsGained = currentLevel - startLevel;
+                    ImGui.Text("Current Level: " + currentLevel + " (+" + levelsGained + ")");
+                    ImGui.Text("XP to Level: " + xpToLevel);
+
+                    int secondsTillLevel = (int) (xpToLevel / (xpPerHour / 3600.0));
+                    String timeTillLevel = String.format("%02dh %02dm %02ds",
+                            TimeUnit.SECONDS.toHours(secondsTillLevel),
+                            TimeUnit.SECONDS.toMinutes(secondsTillLevel) % TimeUnit.HOURS.toMinutes(1),
+                            TimeUnit.SECONDS.toSeconds(secondsTillLevel) % TimeUnit.MINUTES.toSeconds(1));
+                    ImGui.Text("Time till level: " + timeTillLevel);
+
+                    ImGui.EndTabItem();
+                }
+
+
+                if (ImGui.BeginTabItem("Instructions", 0)) {
+                    ImGui.Text("Start at the energy rift of your choice");
+                    ImGui.Text("Make sure you have the required level to harvest the wisp");
+                    ImGui.Text("Press 'Run Script' to start the bot");
+                    ImGui.Text("Web Walking coming soon with progression mode");
                     ImGui.EndTabItem();
                 }
 
                 ImGui.EndTabBar();
-            }*/
+            }
+
             ImGui.End();
         }
+    }
+
+    private float RGBToFloat(int i) {
+        return i / 255.0f;
     }
 
     @Override
     public void drawOverlay() {
         super.drawOverlay();
     }
+
+
+
 }
