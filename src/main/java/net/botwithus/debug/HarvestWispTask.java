@@ -1,12 +1,8 @@
 package net.botwithus.debug;
 
 import net.botwithus.api.game.hud.inventories.Backpack;
-import net.botwithus.api.game.script.treescript.BranchTask;
-import net.botwithus.api.game.script.treescript.LeafTask;
-import net.botwithus.api.game.script.treescript.TreeTask;
 import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
 import net.botwithus.rs3.game.queries.results.EntityResultSet;
-import net.botwithus.rs3.game.scene.entities.Entity;
 import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
 import net.botwithus.rs3.script.Execution;
 
@@ -19,15 +15,15 @@ public class HarvestWispTask implements TaskManager.Task {
     private Npc currentWisp = null;
 
 
-    public DebugScript debugScript;
+    public MainScript mainScript;
 
-    public HarvestWispTask(DebugScript debugScript) {
-        this.debugScript = debugScript;
+    public HarvestWispTask(MainScript mainScript) {
+        this.mainScript = mainScript;
     }
 
     @Override
     public boolean validate() {
-        debugScript.println("Validating");
+        mainScript.println("Validating");
         return !Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1 || getLocalPlayer().isMoving();
     }
 
@@ -36,40 +32,40 @@ public class HarvestWispTask implements TaskManager.Task {
         // Check for chronicle
        // String selectedWispName = ((DebugGraphicsContext)debugScript.getSgc()).wispNames[((DebugGraphicsContext)debugScript.getSgc()).selectedWispIndex.get()];
        // debugScript.println("Selected wisp: " + selectedWispName);
-        if(debugScript.Enriched) {
-            debugScript.println("Checking for Chronicle fragment");
+        if(mainScript.Enriched) {
+            mainScript.println("Checking for Chronicle fragment");
             EntityResultSet<Npc> chronicle = NpcQuery.newQuery().name("Chronicle fragment").results();
             currentWisp = chronicle.nearest();
             if (currentWisp != null) {
 
                 Execution.delayWhile(RandomGenerator.nextInt(1500, 3000), () -> NpcQuery.newQuery().name("Chronicle fragment").results().nearest() != null);
-                debugScript.println("Found Chronicle fragment, interacting");
+                mainScript.println("Found Chronicle fragment, interacting");
                 chronicle.nearest().interact("Capture");
-                debugScript.totalCaughtChronicles++;
+                mainScript.totalCaughtChronicles++;
             }
         }
         //check for butterflies
-        if(debugScript.Butterfly) {
-            debugScript.println("Checking for Butterfly");
+        if(mainScript.Butterfly) {
+            mainScript.println("Checking for Butterfly");
             EntityResultSet<Npc> butterfly = NpcQuery.newQuery().name("Guthixian butterfly").results();
             currentWisp = butterfly.nearest();
             if (currentWisp != null) {
                 Execution.delayWhile(RandomGenerator.nextInt(1500, 3000), () -> NpcQuery.newQuery().name("Guthixian butterfly").results().nearest() != null);
-                debugScript.println("Found Guthixian butterfly, interacting");
+                mainScript.println("Found Guthixian butterfly, interacting");
                 butterfly.nearest().interact("Capture");
-                debugScript.totalCaughtButterflies++;
+                mainScript.totalCaughtButterflies++;
             }
         }
 
-        if(debugScript.serenSpirits)
+        if(mainScript.serenSpirits)
         {
-            debugScript.println("Checking for Seren spirit");
+            mainScript.println("Checking for Seren spirit");
             EntityResultSet<Npc> serenSpirit = NpcQuery.newQuery().name("Seren spirit").results();
             currentWisp = serenSpirit.nearest();
             if (currentWisp != null) {
-                debugScript.println("Found Seren spirit, interacting");
+                mainScript.println("Found Seren spirit, interacting");
                 serenSpirit.nearest().interact("Capture");
-                debugScript.totalCaughtSerenSpirits++;
+                mainScript.totalCaughtSerenSpirits++;
                 Execution.delayWhile(RandomGenerator.nextInt(1500, 3000), () -> NpcQuery.newQuery().name("Seren spirit").results().nearest() != null);
             }
         }
@@ -80,7 +76,7 @@ public class HarvestWispTask implements TaskManager.Task {
         currentWisp = enrichedWisps.nearest();
         if (currentWisp != null) {
             if (shouldInteract()) return;
-            debugScript.println("Found Enriched wisp, harvesting");
+            mainScript.println("Found Enriched wisp, harvesting");
             harvestWisp(currentWisp);
             return;
         }
@@ -91,7 +87,7 @@ public class HarvestWispTask implements TaskManager.Task {
         currentWisp = springs.nearest();
         if (currentWisp != null) {
             if (shouldInteract()) return;
-            debugScript.println("Found spring, harvesting");
+            mainScript.println("Found spring, harvesting");
 
             harvestWisp(currentWisp);
             return;
@@ -103,7 +99,7 @@ public class HarvestWispTask implements TaskManager.Task {
         currentWisp = wisps.nearest();
         if (currentWisp != null) {
             if (shouldInteract()) return;
-            debugScript.println("Found regular wisp, harvesting");
+            mainScript.println("Found regular wisp, harvesting");
             harvestWisp(currentWisp);
             return;
         }
@@ -112,7 +108,7 @@ public class HarvestWispTask implements TaskManager.Task {
     public boolean shouldInteract() {
         boolean shouldinteract = Execution.delayUntil(RandomGenerator.nextInt(2000, 4500), () -> Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1 || getLocalPlayer().isMoving());
         if(!shouldinteract) {
-            debugScript.println("Not interacting with wisp Didnt meet conditions");
+            mainScript.println("Not interacting with wisp Didnt meet conditions");
             return true;
         }
         return false;
@@ -122,7 +118,7 @@ public class HarvestWispTask implements TaskManager.Task {
         //debugScript.println("Harvesting wisp");
         Execution.delay(RandomGenerator.nextInt(500, 1500));
         wisp.interact("Harvest");
-        debugScript.println("clicked wisp");
+        mainScript.println("clicked wisp");
     }
 
 }

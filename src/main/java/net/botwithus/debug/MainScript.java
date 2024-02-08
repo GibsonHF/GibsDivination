@@ -1,33 +1,18 @@
 package net.botwithus.debug;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.botwithus.api.game.hud.inventories.Backpack;
-import net.botwithus.api.game.world.Traverse;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.game.Area;
-import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.Coordinate;
 
 import net.botwithus.rs3.game.skills.Skills;
-import net.botwithus.rs3.game.vars.VarManager;
-import net.botwithus.rs3.imgui.ImGui;
-import net.botwithus.rs3.imgui.ImGuiWindowFlag;
-import net.botwithus.rs3.imgui.NativeBoolean;
-import net.botwithus.rs3.imgui.NativeInteger;
-import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 import net.botwithus.rs3.script.config.ScriptConfig;
-import net.botwithus.rs3.util.RandomGenerator;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class DebugScript extends LoopingScript {
+public class MainScript extends LoopingScript {
 
     public boolean Enriched;
     public boolean Butterfly;
@@ -37,7 +22,7 @@ public class DebugScript extends LoopingScript {
     public boolean serenSpirits;
     public int totalCaughtSerenSpirits = 0;
 
-    public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
+    public MainScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(name, scriptConfig, scriptDefinition);
     }
 
@@ -50,7 +35,7 @@ public class DebugScript extends LoopingScript {
 
     @Override
     public boolean initialize() {
-        this.sgc = new DebugGraphicsContext(getConsole(), this);
+        this.sgc = new MainGraphicsContext(getConsole(), this);
         this.loopDelay = 590;
 
         taskManager = new TaskManager(tasks, this);
@@ -76,6 +61,7 @@ public class DebugScript extends LoopingScript {
     }
 
     public Area checker() {
+        //user when traverse update to navigate to the correct wisp
         int level = Skills.DIVINATION.getActualLevel();
         if (level < 10) {
             println("Level 1-10 detected");

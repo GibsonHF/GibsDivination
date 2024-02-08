@@ -7,9 +7,9 @@ import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 import java.util.concurrent.TimeUnit;
 
-public class DebugGraphicsContext extends ScriptGraphicsContext {
+public class MainGraphicsContext extends ScriptGraphicsContext {
 
-    private final DebugScript script;
+    private final MainScript script;
     private long startTime;
     private int startXP;
     private int startLevel;
@@ -20,7 +20,7 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
     };
    public NativeInteger selectedWispIndex = new NativeInteger(0);
 
-    public DebugGraphicsContext(ScriptConsole console, DebugScript script) {
+    public MainGraphicsContext(ScriptConsole console, MainScript script) {
         super(console);
         this.script = script;
         this.startTime = System.currentTimeMillis();

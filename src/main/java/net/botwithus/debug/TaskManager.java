@@ -2,22 +2,6 @@ package net.botwithus.debug;
 
 import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.api.game.hud.inventories.Backpack;
-import net.botwithus.api.game.world.Traverse;
-import net.botwithus.rs3.game.Area;
-import net.botwithus.rs3.game.Client;
-import net.botwithus.rs3.game.Coordinate;
-import net.botwithus.rs3.game.cs2.ScriptBuilder;
-import net.botwithus.rs3.game.cs2.layouts.StringLayout;
-import net.botwithus.rs3.game.hud.interfaces.Component;
-import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
-import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
-import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
-import net.botwithus.rs3.game.queries.results.EntityResultSet;
-import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
-import net.botwithus.rs3.game.scene.entities.object.SceneObject;
-import net.botwithus.rs3.input.KeyboardInput;
-import net.botwithus.rs3.script.Execution;
-import net.botwithus.rs3.script.Script;
 
 import java.util.List;
 
@@ -30,11 +14,11 @@ public class TaskManager {
         BACKPACK_NOT_FULL,
         DEFAULT
     }
-    private final DebugScript debugScript;
+    private final MainScript mainScript;
 
-        public TaskManager(List<Task> tasks, DebugScript debugScript) {
+        public TaskManager(List<Task> tasks, MainScript mainScript) {
             this.tasks = tasks;
-            this.debugScript = debugScript;
+            this.mainScript = mainScript;
 
         }
 
@@ -45,10 +29,10 @@ public class TaskManager {
 
                 switch (gameState) {
                     case DIALOG_OPEN, DEFAULT, BACKPACK_FULL:
-                        switchTo(new InventoryManagementTask(debugScript));
+                        switchTo(new InventoryManagementTask(mainScript));
                         break;
                     case BACKPACK_NOT_FULL:
-                        switchTo(new HarvestWispTask(debugScript));
+                        switchTo(new HarvestWispTask(mainScript));
                         break;
 
                 }
