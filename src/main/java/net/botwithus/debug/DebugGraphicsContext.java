@@ -47,6 +47,7 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
                 if (ImGui.BeginTabItem("Statistics", 0)) {
                     ImGui.Text("Total Chronicles: " + script.totalCaughtChronicles);
                     ImGui.Text("Total Butterflies: " + script.totalCaughtButterflies);
+                    ImGui.Text("Total Seren Spirits: " + script.totalCaughtSerenSpirits);
 
                     long timeElapsedMillis = System.currentTimeMillis() - startTime;
                     String timeElapsed = String.format("%02dh %02dm %02ds",

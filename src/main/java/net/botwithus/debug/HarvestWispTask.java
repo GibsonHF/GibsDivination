@@ -28,7 +28,7 @@ public class HarvestWispTask implements TaskManager.Task {
     @Override
     public boolean validate() {
         debugScript.println("Validating");
-        return !Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1;
+        return !Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1 || getLocalPlayer().isMoving();
     }
 
     @Override
@@ -69,6 +69,7 @@ public class HarvestWispTask implements TaskManager.Task {
             if (currentWisp != null) {
                 debugScript.println("Found Seren spirit, interacting");
                 serenSpirit.nearest().interact("Capture");
+                debugScript.totalCaughtSerenSpirits++;
                 Execution.delayWhile(RandomGenerator.nextInt(1500, 3000), () -> NpcQuery.newQuery().name("Seren spirit").results().nearest() != null);
             }
         }
@@ -109,7 +110,7 @@ public class HarvestWispTask implements TaskManager.Task {
     }
 
     public boolean shouldInteract() {
-        boolean shouldinteract = Execution.delayUntil(RandomGenerator.nextInt(2000, 4500), () -> Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1);
+        boolean shouldinteract = Execution.delayUntil(RandomGenerator.nextInt(2000, 4500), () -> Backpack.isFull() || getLocalPlayer().distanceTo(currentWisp) > 2.5 || !currentWisp.validate() || getLocalPlayer().getAnimationId() == -1 || getLocalPlayer().isMoving());
         if(!shouldinteract) {
             debugScript.println("Not interacting with wisp Didnt meet conditions");
             return true;

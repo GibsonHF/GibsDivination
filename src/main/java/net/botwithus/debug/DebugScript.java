@@ -35,6 +35,7 @@ public class DebugScript extends LoopingScript {
     public int totalCaughtChronicles = 0;
     public int totalCaughtButterflies = 0;
     public boolean serenSpirits;
+    public int totalCaughtSerenSpirits = 0;
 
     public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(name, scriptConfig, scriptDefinition);
