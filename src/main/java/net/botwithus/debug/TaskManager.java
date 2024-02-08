@@ -50,6 +50,7 @@ public class TaskManager {
                     case BACKPACK_NOT_FULL:
                         switchTo(new HarvestWispTask(debugScript));
                         break;
+
                 }
                 if (task.validate()) {
                     task.perform();

@@ -34,6 +34,7 @@ public class DebugScript extends LoopingScript {
 
     public int totalCaughtChronicles = 0;
     public int totalCaughtButterflies = 0;
+    public boolean serenSpirits;
 
     public DebugScript(String name, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(name, scriptConfig, scriptDefinition);
@@ -52,6 +53,7 @@ public class DebugScript extends LoopingScript {
         this.loopDelay = 590;
 
         taskManager = new TaskManager(tasks, this);
+        //do a starter task to get it started
         tasks.add(new InventoryManagementTask(this));
         return super.initialize();
     }

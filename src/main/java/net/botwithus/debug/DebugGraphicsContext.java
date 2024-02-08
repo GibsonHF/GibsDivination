@@ -38,10 +38,9 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
 
                 if (ImGui.BeginTabItem("Settings", 0)) {
                     script.runScript = ImGui.Checkbox("Run Script", script.runScript);
-                    ImGui.PushStyleColor(2, RGBToFloat(33), RGBToFloat(204),RGBToFloat(45), RGBToFloat(255)); //WindowBg
                     script.Enriched = ImGui.Checkbox("Capture Chronicles", script.Enriched);
                     script.Butterfly = ImGui.Checkbox("Capture Butterflies", script.Butterfly);
-                    ImGui.PopStyleColor();
+                    script.serenSpirits = ImGui.Checkbox("Capture Seren Spirits", script.serenSpirits);
                     ImGui.EndTabItem();
                 }
 
@@ -75,6 +74,13 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
                             TimeUnit.SECONDS.toSeconds(secondsTillLevel) % TimeUnit.MINUTES.toSeconds(1));
                     ImGui.Text("Time till level: " + timeTillLevel);
 
+                    if(ImGui.Button("Reset XP/Time"))
+                    {
+                        startTime = System.currentTimeMillis();
+                        startXP = Skills.DIVINATION.getSkill().getExperience();
+                        startLevel = Skills.DIVINATION.getSkill().getLevel();
+                    }
+
                     ImGui.EndTabItem();
                 }
 
@@ -83,7 +89,7 @@ public class DebugGraphicsContext extends ScriptGraphicsContext {
                     ImGui.Text("Start at the energy rift of your choice");
                     ImGui.Text("Make sure you have the required level to harvest the wisp");
                     ImGui.Text("Press 'Run Script' to start the bot");
-                    ImGui.Text("Web Walking coming soon with progression mode");
+                    ImGui.Text("Pathing coming soon with progression mode");
                     ImGui.EndTabItem();
                 }
 
